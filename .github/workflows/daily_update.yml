@@ -1,0 +1,29 @@
+name: Daily Portfolio News Update
+
+on:
+  schedule:
+    - cron: '0 10 * * *'   # 매일 19:00 KST (= 10:00 UTC)
+  workflow_dispatch:         # 수동 실행 버튼
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run news update script
+        run: python update_news.py
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
